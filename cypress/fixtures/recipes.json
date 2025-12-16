@@ -1,0 +1,22 @@
+{
+  "recipes": [
+    {
+      "id": "1",
+      "title": "Tiramisú Clásico",
+      "category": "dessert",
+      "difficulty": "medium"
+    },
+    {
+      "id": "2",
+      "title": "Pasta Carbonara",
+      "category": "main-course",
+      "difficulty": "easy"
+    },
+    {
+      "id": "3",
+      "title": "Brownie de Chocolate",
+      "category": "dessert",
+      "difficulty": "easy"
+    }
+  ]
+}
