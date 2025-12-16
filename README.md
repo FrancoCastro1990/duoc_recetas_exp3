@@ -72,7 +72,7 @@ src/
 
 ```bash
 # Clonar el repositorio
-git clone <url-del-repositorio>
+git clone <https://github.com/FrancoCastro1990/duoc_recetas_exp3.git>
 
 # Instalar dependencias
 npm install
