@@ -24,12 +24,9 @@ export default defineConfig({
         '**/shared/**',
         '**/graphql/types.ts',
         '**/queries/**',
-        '**/RecipeDescription.tsx',
-        '**/RecipeDetailHeader.tsx',
-        '**/RecipeDetailInfo.tsx',
-        '**/RecipeIngredients.tsx',
-        '**/RecipeInstructions.tsx',
-        '**/RecipeTips.tsx'
+        '**/PetDetailHeader.tsx',
+        '**/PetOwnerInfo.tsx',
+        '**/PetMedicalHistory.tsx'
       ]
     }
   },

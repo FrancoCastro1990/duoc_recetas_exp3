@@ -1,60 +1,54 @@
-/**
- * E2E Test: Navigation
- * Tests basic navigation flows through the application
- */
-
 describe('Navigation', () => {
   beforeEach(() => {
     cy.visit('/');
   });
 
-  it('should display home page with welcome message', () => {
-    cy.contains('h1', 'Bienvenido').should('be.visible');
-    cy.url().should('eq', Cypress.config().baseUrl + '/');
+  it('displays home page', () => {
+    cy.contains('Veterinaria Cuidado Animal').should('be.visible');
   });
 
-  it('should navigate from home to recipes page using nav link', () => {
-    // Click on Recetas nav link
-    cy.getByTestId('nav-recipes').click();
-
-    // Verify URL changed
-    cy.url().should('include', '/recipes');
-
-    // Wait for animation to complete and verify recipes grid
-    cy.getByTestId('recipes-grid', { timeout: 15000 }).should('exist');
+  it('navigates to clients page from home', () => {
+    cy.contains('Ver Clientes').click();
+    cy.url().should('include', '/clients');
+    cy.contains('Clientes y Mascotas').should('be.visible');
   });
 
-  it('should navigate from recipes page back to home', () => {
-    // First go to recipes
-    cy.getByTestId('nav-recipes').click();
-    cy.url().should('include', '/recipes');
+  it('navigates to appointments page from home', () => {
+    cy.contains('Ver Citas').click();
+    cy.url().should('include', '/appointments');
+    cy.contains('Citas del Dia').should('be.visible');
+  });
 
-    // Then navigate back home
+  it('navigates using navbar', () => {
+    cy.getByTestId('nav-clients').click();
+    cy.url().should('include', '/clients');
+
+    cy.getByTestId('nav-appointments').click();
+    cy.url().should('include', '/appointments');
+
     cy.getByTestId('nav-home').click();
-
-    // Verify we are back home
     cy.url().should('eq', Cypress.config().baseUrl + '/');
-    cy.contains('h1', 'Bienvenido').should('be.visible');
   });
 
-  it('should display recipe cards when visiting recipes page', () => {
-    cy.visit('/recipes');
-
-    // Wait for recipes to load
-    cy.getByTestId('recipes-grid').should('be.visible');
-
-    // Verify at least one recipe card is displayed
-    cy.get('[data-testid^="recipe-card-"]').should('have.length.at.least', 1);
-  });
-
-  it('should show active state on current nav link', () => {
-    // Home should be active initially
+  it('shows active state on navbar', () => {
     cy.getByTestId('nav-home').should('have.class', 'bg-white');
 
-    // Navigate to recipes
-    cy.getByTestId('nav-recipes').click();
+    cy.getByTestId('nav-clients').click();
+    cy.getByTestId('nav-clients').should('have.class', 'bg-white');
+    cy.getByTestId('nav-home').should('not.have.class', 'bg-white');
+  });
 
-    // Recipes nav should now have active state
-    cy.getByTestId('nav-recipes').should('have.class', 'bg-white');
+  it('navigates to pet detail from clients page', () => {
+    cy.visit('/clients');
+    cy.getByTestId('pets-grid').should('be.visible');
+    cy.get('[data-testid^="pet-card-"]').first().click();
+    cy.url().should('include', '/pets/');
+    cy.getByTestId('pet-detail-header').should('be.visible');
+  });
+
+  it('navigates back from pet detail', () => {
+    cy.visit('/pets/p1');
+    cy.getByTestId('back-button').click();
+    cy.url().should('include', '/clients');
   });
 });

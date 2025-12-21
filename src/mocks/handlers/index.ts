@@ -4,10 +4,7 @@
  * Supports both REST (http) and GraphQL (graphql) handlers
  */
 
-import { recipesRestHandlers } from './recipes-rest';
-import { recipesGraphQLHandlers } from './recipes-graphql';
+import { vetRestHandlers } from './vet-rest';
+import { vetGraphQLHandlers } from './vet-graphql';
 
-export const handlers = [
-  ...recipesRestHandlers,
-  ...recipesGraphQLHandlers,
-];
+export const handlers = [...vetRestHandlers, ...vetGraphQLHandlers];

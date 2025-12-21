@@ -1,6 +1,14 @@
-# Recetas App
+# Veterinaria Cuidado Animal
 
-Aplicacion web para explorar y consultar una base de datos de recetas culinarias. Permite a los usuarios navegar por el catalogo de recetas, filtrar por categoria, buscar por nombre y ver los detalles completos de cada receta incluyendo ingredientes, instrucciones de preparacion y tiempo de coccion.
+Sistema de gestion para la veterinaria "Cuidado Animal". Permite administrar clientes, mascotas y citas de manera eficiente.
+
+## Descripcion
+
+Este proyecto fue desarrollado como parte de la Evaluacion Final Transversal de la asignatura Desarrollo Frontend II (PFY2202). El sistema permite:
+
+- **Visualizar clientes y mascotas**: Informacion de clientes con sus datos de contacto y las mascotas asociadas a cada uno.
+- **Gestionar citas**: Listado de atenciones agendadas filtradas por dia (maximo 8 citas por dia), mostrando veterinario, mascota y dueno.
+- **Ver detalles de mascotas**: Informacion completa incluyendo historial medico.
 
 ## Tecnologias Utilizadas
 
@@ -10,6 +18,7 @@ Aplicacion web para explorar y consultar una base de datos de recetas culinarias
 - **Vite 7** - Build tool y servidor de desarrollo
 - **Tailwind CSS v4** - Framework de estilos utilitarios
 - **React Router DOM v7** - Enrutamiento del lado del cliente
+- **Redux Toolkit** - Gestion de estado de UI
 
 ### Data Fetching
 - **TanStack Query v5** - Gestion de estado del servidor para REST API
@@ -31,9 +40,9 @@ Aplicacion web para explorar y consultar una base de datos de recetas culinarias
 
 La aplicacion implementa una arquitectura hibrida que utiliza dos tipos de APIs:
 
-1. **REST API** (`/api/recipes`): Proporciona listados de recetas con informacion resumida (titulo, dificultad, categoria, imagen, tiempo de coccion). Utilizada para la vista de exploracion.
+1. **REST API** (`/api/*`): Proporciona listados de clientes, mascotas y citas. Utilizada para las vistas principales.
 
-2. **GraphQL API** (`/graphql`): Proporciona informacion detallada de cada receta individual (ingredientes, instrucciones paso a paso, consejos, autor). Utilizada para la vista de detalle.
+2. **GraphQL API** (`/graphql`): Proporciona informacion detallada de mascotas individuales incluyendo historial medico. Utilizada para la vista de detalle.
 
 Esta arquitectura permite optimizar las consultas: las listas cargan datos ligeros via REST, mientras que los detalles completos se obtienen bajo demanda via GraphQL.
 
@@ -42,37 +51,45 @@ Esta arquitectura permite optimizar las consultas: las listas cargan datos liger
 ```
 src/
 ├── features/                    # Modulos organizados por funcionalidad
-│   ├── recipes-explorer/        # Feature principal de exploracion
-│   │   ├── components/          # Componentes UI (RecipeCard, RecipeGrid, etc.)
-│   │   ├── hooks/               # Custom hooks (useRecipesExplorer, useRecipeDetail)
-│   │   ├── services/            # Clase de servicio REST
+│   ├── vet-management/          # Feature principal de veterinaria
+│   │   ├── components/          # Componentes UI (ClientCard, PetCard, AppointmentCard, etc.)
+│   │   ├── hooks/               # Custom hooks (useClients, usePets, useAppointments, usePetDetail)
+│   │   ├── services/            # Clase de servicio REST (VetService)
 │   │   ├── queries/             # Configuracion de TanStack Query
 │   │   ├── graphql/             # Queries y tipos GraphQL
 │   │   ├── pages/               # Componentes de pagina
 │   │   ├── types/               # Interfaces TypeScript
-│   │   └── utils/               # Funciones auxiliares
+│   │   └── utils/               # Funciones auxiliares (helpers)
 │   └── shared/                  # Componentes compartidos (Layout)
+├── store/                       # Redux store y slices
+│   ├── index.ts                 # Configuracion del store
+│   ├── hooks.ts                 # Hooks tipados (useAppDispatch, useAppSelector)
+│   └── slices/                  # Redux slices (uiSlice)
 ├── lib/                         # Configuracion de clientes (Apollo, React Query)
-├── mocks/                       # Handlers MSW (REST + GraphQL)
+├── mocks/                       # Handlers MSW (REST + GraphQL) y datos mock
+│   ├── data/                    # Datos mock (clients, pets, appointments, veterinarians)
+│   └── handlers/                # Handlers de requests
 └── main.tsx                     # Punto de entrada con providers
 ```
 
 ### Patron de Data Fetching
 
-- **Lista de Recetas**: REST via `RecipesService.getAllRecipes()` -> TanStack Query
-- **Detalle de Receta**: GraphQL via `useRecipeDetail(id)` -> Apollo Client
+- **Lista de Clientes/Mascotas/Citas**: REST via `VetService` -> TanStack Query
+- **Detalle de Mascota**: GraphQL via `usePetDetail(id)` -> Apollo Client
+- **Estado de UI**: Redux via `uiSlice` (filtro de fecha, busqueda)
 
 ## Instalacion
 
 ### Requisitos Previos
-- Node.js >= 18.x
+- Node.js >= 20.x
 - npm >= 9.x
 
 ### Pasos de Instalacion
 
 ```bash
 # Clonar el repositorio
-git clone <https://github.com/FrancoCastro1990/duoc_recetas_exp3.git>
+git clone <url-del-repositorio>
+cd duoc_veterinaria
 
 # Instalar dependencias
 npm install
@@ -111,10 +128,11 @@ npm run e2e:open     # Abre interfaz interactiva de Cypress
 El proyecto utiliza Vitest con React Testing Library para pruebas unitarias. MSW se utiliza para simular respuestas de las APIs REST y GraphQL.
 
 **Archivos de prueba:**
-- `src/features/recipes-explorer/components/*.test.tsx` - Tests de componentes
-- `src/features/recipes-explorer/hooks/*.test.ts(x)` - Tests de hooks
-- `src/features/recipes-explorer/services/*.test.ts` - Tests de servicios
-- `src/features/recipes-explorer/utils/*.test.ts` - Tests de utilidades
+- `src/features/vet-management/components/*.test.tsx` - Tests de componentes
+- `src/features/vet-management/hooks/*.test.ts(x)` - Tests de hooks
+- `src/features/vet-management/services/*.test.ts` - Tests de servicios
+- `src/features/vet-management/utils/*.test.ts` - Tests de utilidades
+- `src/store/slices/*.test.ts` - Tests de Redux slices
 
 **Configuracion MSW:**
 - `src/test/server.ts` - Servidor MSW para pruebas
@@ -122,9 +140,9 @@ El proyecto utiliza Vitest con React Testing Library para pruebas unitarias. MSW
 
 **Cobertura de Codigo:**
 El proyecto esta configurado para alcanzar una cobertura minima del 70% en:
-- Sentencias ejecutadas (Statements)
-- Funciones ejecutadas (Functions)
-- Lineas de codigo ejecutadas (Lines)
+- Sentencias ejecutadas (Statements): ~84%
+- Funciones ejecutadas (Functions): ~86%
+- Lineas de codigo ejecutadas (Lines): ~84%
 
 Para ver el reporte de cobertura:
 ```bash
@@ -137,43 +155,66 @@ Cypress se utiliza para pruebas end-to-end que simulan la interaccion del usuari
 
 **Tests E2E disponibles:**
 - `cypress/e2e/navigation.cy.ts` - Pruebas de navegacion entre paginas
-- `cypress/e2e/filtering.cy.ts` - Pruebas de filtrado por categoria
-- `cypress/e2e/search.cy.ts` - Pruebas de busqueda de recetas
-- `cypress/e2e/recipe-detail.cy.ts` - Pruebas de vista de detalle
+- `cypress/e2e/clients-pets.cy.ts` - Pruebas de visualizacion de clientes y mascotas
+- `cypress/e2e/appointments.cy.ts` - Pruebas de citas y filtro de fecha
+- `cypress/e2e/pet-detail.cy.ts` - Pruebas de vista de detalle de mascota
 
 **Comando personalizado:**
 - `cy.getByTestId(testId)` - Selecciona elementos por atributo `data-testid`
 
 ## Modelo de Datos
 
-### RecipeSummary (REST API)
+### Client
 ```typescript
-interface RecipeSummary {
+interface Client {
   id: string;
-  title: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  category: 'dessert' | 'main-course';
-  imageUrl: string;
-  cookingTime: number; // minutos
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  address: string;
 }
 ```
 
-### RecipeDetail (GraphQL API)
+### PetSummary (REST API)
 ```typescript
-interface RecipeDetail {
+interface PetSummary {
   id: string;
-  title: string;
-  description: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  category: 'dessert' | 'main-course';
+  name: string;
+  species: 'dog' | 'cat' | 'bird' | 'rabbit' | 'hamster' | 'other';
+  breed: string;
+  age: number;
   imageUrl: string;
-  cookingTime: number;
-  prepTime: number;
-  servings: number;
-  ingredients: Ingredient[];
-  instructions: string[];
-  tips: string[];
-  author: string;
+  ownerId: string;
+}
+```
+
+### PetDetail (GraphQL API)
+```typescript
+interface PetDetail extends PetSummary {
+  weight: number;
+  color: string;
+  birthDate: string;
+  medicalHistory: MedicalRecord[];
+  owner: Client;
+}
+```
+
+### AppointmentSummary
+```typescript
+interface AppointmentSummary {
+  id: string;
+  date: string;       // YYYY-MM-DD
+  time: string;       // HH:mm
+  status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled';
+  petId: string;
+  petName: string;
+  petSpecies: PetSpecies;
+  ownerId: string;
+  ownerName: string;
+  veterinarianId: string;
+  veterinarianName: string;
+  reason: string;
 }
 ```
 
@@ -182,15 +223,24 @@ interface RecipeDetail {
 | Ruta | Descripcion |
 |------|-------------|
 | `/` | Pagina de bienvenida |
-| `/recipes` | Explorador de recetas con filtros y busqueda |
-| `/recipes/:id` | Detalle de receta individual |
+| `/clients` | Visualizacion de clientes y mascotas |
+| `/appointments` | Citas del dia con filtro por fecha |
+| `/pets/:id` | Detalle de mascota con historial medico |
+
+## Estado de Redux
+
+El `uiSlice` maneja el estado de la interfaz:
+- `selectedDate`: Fecha seleccionada para filtrar citas
+- `clientSearchTerm`: Termino de busqueda de clientes
+- `clientsViewMode`: Modo de visualizacion (grid/list)
+- `sidebarOpen`: Estado del menu mobile
 
 ## Configuracion de Tailwind CSS v4
 
 El tema se configura mediante la directiva `@theme` en `src/index.css`. Colores personalizados:
-- `primary-*`: Tonos naranja (marca principal)
-- `secondary-*`: Tonos ambar/amarillo
-- `accent-*`: Tonos verdes
+- `primary-*`: Tonos teal (marca principal - profesional medico)
+- `secondary-*`: Tonos sky blue
+- `accent-*`: Tonos emerald (salud/vitalidad)
 - `neutral-*`: Tonos grises
 
 ## Path Alias
@@ -198,17 +248,25 @@ El tema se configura mediante la directiva `@theme` en `src/index.css`. Colores 
 El proyecto utiliza `@/*` como alias para importar desde el directorio `src/`:
 
 ```typescript
-import { RecipeCard } from '@/features/recipes-explorer/components';
+import { ClientCard } from '@/features/vet-management/components';
 ```
 
-Configurado en `tsconfig.app.json`.
+Configurado en `tsconfig.app.json` y `vite.config.ts`.
 
 ## Mocking con MSW
 
 En modo desarrollo, Mock Service Worker intercepta las llamadas a las APIs y retorna datos simulados. Esto permite desarrollar el frontend de forma independiente del backend.
 
 **Handlers:**
-- `src/mocks/handlers/recipes-rest.ts` - Handler para GET /api/recipes
-- `src/mocks/handlers/recipes-graphql.ts` - Handler para query GetRecipeById
+- `src/mocks/handlers/vet-rest.ts` - Handlers para REST API
+- `src/mocks/handlers/vet-graphql.ts` - Handler para queries GraphQL
 
 El worker se inicializa automaticamente en `src/main.tsx` cuando `import.meta.env.MODE === 'development'`.
+
+## Autor
+
+Desarrollado para DUOC UC - Desarrollo Frontend II (PFY2202)
+
+## Licencia
+
+Este proyecto es para fines educativos.
